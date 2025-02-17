@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "PaperCharacter.h"
+#include "EnhancedInputComponent.h"
+#include "InputActionValue.h"
 #include "GD_2D_prj1Character.generated.h"
 
 class UTextRenderComponent;
@@ -16,10 +18,17 @@ class UTextRenderComponent;
  * The CharacterMovementComponent (inherited from ACharacter) handles movement of the collision capsule
  * The Sprite component (inherited from APaperCharacter) handles the visuals
  */
+
+
 UCLASS(config=Game)
+class UInputMappingContext;
 class AGD_2D_prj1Character : public APaperCharacter
 {
 	GENERATED_BODY()
+
+	// The Players input mapping context
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputMappingContext* InputMapping;
 
 	/** Side view camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera, meta=(AllowPrivateAccess="true"))
