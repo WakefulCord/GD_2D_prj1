@@ -4,9 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "PaperCharacter.h"
+#include "EnhancedInputComponent.h"
+#include "InputActionValue.h"
 #include "GD_2D_prj1Character.generated.h"
 
-class UTextRenderComponent;
+class UTextRenderComponent; 
+class UInputMappingContext;
 
 /**
  * This class is the default character for GD_2D_prj1, and it is responsible for all
@@ -71,4 +74,7 @@ public:
 	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	// The Players input mapping context
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputMappingContext* InputMapping;
 };
