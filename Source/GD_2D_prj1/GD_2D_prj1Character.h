@@ -60,6 +60,12 @@ protected:
 	/** Handle touch inputs. */
 	void TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location);
 
+	//code for controlling stamina
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Stamina;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int MaxStamina = 100;
+
 	/** Handle touch stop event. */
 	void TouchStopped(const ETouchIndex::Type FingerIndex, const FVector Location);
 
