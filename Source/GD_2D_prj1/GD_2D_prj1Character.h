@@ -6,9 +6,11 @@
 #include "PaperCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
+#include "InputTriggers.h"
 #include "GD_2D_prj1Character.generated.h"
 
 class UTextRenderComponent; 
+class UInputAction;
 class UInputMappingContext;
 
 /**
@@ -47,12 +49,12 @@ protected:
 	void UpdateAnimation();
 
 	/** Called for side to side input */
-	void MoveRight(float Value);
+	void MoveRight(const FInputActionValue& Value);
 
 	void UpdateCharacter();
 
 	/** Handle touch inputs. */
-	void TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location);
+	void TouchStarted(bool FInputActionValue, const FVector Location);
 
 	//code for controlling stamina
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -61,7 +63,7 @@ protected:
 	int MaxStamina = 100;
 
 	/** Handle touch stop event. */
-	void TouchStopped(const ETouchIndex::Type FingerIndex, const FVector Location);
+	void TouchStopped(bool FInputActionValue, const FVector Location);
 
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
@@ -77,4 +79,9 @@ public:
 	// The Players input mapping context
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
 	UInputMappingContext* InputMapping;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputAction* IA_Move;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputAction* IA_Jump;
+
 };

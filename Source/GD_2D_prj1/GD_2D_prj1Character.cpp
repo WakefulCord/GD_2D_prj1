@@ -5,11 +5,11 @@
 #include "Components/TextRenderComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "Camera/CameraComponent.h"
-#include "EnhancedInputSubsystems.h"
 
 DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
@@ -119,24 +119,32 @@ void AGD_2D_prj1Character::SetupPlayerInputComponent(class UInputComponent* Play
 
 	Subsystem->ClearAllMappings();
 	Subsystem->AddMappingContext(InputMapping, 0);
+	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+
+	Input->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AGD_2D_prj1Character::MoveRight);
+
+	/*Input->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &AGD_2D_prj1Character::TouchStarted);
+	
+	Input->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &AGD_2D_prj1Character::TouchStopped);*/
 }
 
-void AGD_2D_prj1Character::MoveRight(float Value)
+void AGD_2D_prj1Character::MoveRight(const FInputActionValue& Value)
 {
 	/*UpdateChar();*/
 
 	// Apply the input to the character motion
-	AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Value);
+	Value.Get<float>();
 }
 
-void AGD_2D_prj1Character::TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location)
+void AGD_2D_prj1Character::TouchStarted(bool FInputActionValue, const FVector Location)
 {
 	// Jump on any touch
 	Jump();
 }
 
-void AGD_2D_prj1Character::TouchStopped(const ETouchIndex::Type FingerIndex, const FVector Location)
+void AGD_2D_prj1Character::TouchStopped(bool FInputActionValue, const FVector Location)
 {
+
 	// Cease jumping once touch stopped
 	StopJumping();
 }
