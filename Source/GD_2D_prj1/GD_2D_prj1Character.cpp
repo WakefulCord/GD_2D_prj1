@@ -80,24 +80,27 @@ AGD_2D_prj1Character::AGD_2D_prj1Character()
 //////////////////////////////////////////////////////////////////////////
 // Animation
 
-void AGD_2D_prj1Character::UpdateAnimation()
+void AGD_2D_prj1Character::UpdateAnimation(UPaperFlipbook* animation)
 {
-	const FVector PlayerVelocity = GetVelocity();
-	const float PlayerSpeedSqr = PlayerVelocity.SizeSquared();
+	//const FVector PlayerVelocity = GetVelocity();
+	//const float PlayerSpeedSqr = PlayerVelocity.SizeSquared();
 
-	// Are we moving or standing still?
-	UPaperFlipbook* DesiredAnimation = (PlayerSpeedSqr > 0.0f) ? RunningAnimation : IdleAnimation;
-	if( GetSprite()->GetFlipbook() != DesiredAnimation 	)
+	//// Are we moving or standing still?
+	//UPaperFlipbook* DesiredAnimation = (PlayerSpeedSqr > 0.0f) ? RunningAnimation : IdleAnimation;
+	if( GetSprite()->GetFlipbook() != animation)
 	{
-		GetSprite()->SetFlipbook(DesiredAnimation);
+		GetSprite()->SetFlipbook(animation);
 	}
 }
 
 void AGD_2D_prj1Character::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	
-	UpdateCharacter();	
+	// update the players state
+	UpdateState();
+	// update the state functionality
+	HandleState();
+	//UpdateCharacter();
 }
 
 
@@ -152,7 +155,7 @@ void AGD_2D_prj1Character::TouchStopped(bool FInputActionValue, const FVector Lo
 void AGD_2D_prj1Character::UpdateCharacter()
 {
 	// Update animation to match the motion
-	UpdateAnimation();
+	//UpdateAnimation(UPaperFlipbook* animation);
 
 	// Now setup the rotation of the controller based on the direction we are travelling
 	const FVector PlayerVelocity = GetVelocity();	
@@ -170,3 +173,88 @@ void AGD_2D_prj1Character::UpdateCharacter()
 		}
 	}
 }
+void AGD_2D_prj1Character::UpdateState()
+{
+	const FVector PlayerVelocity = GetVelocity();
+	switch (CharacterState)
+	{
+	case ECharacterState::Idle:
+		// from Idle we can run, jump or die horribly (if you added the health script), no dissapearing platforms so can't fall
+		// jump has proity over run
+		if (PlayerVelocity.Z > 0.1) // must be jumping
+		{
+			CharacterState = ECharacterState::Jumping;
+		}
+		else if (FMath::Abs(PlayerVelocity.X) > 0.1) // must be running
+		{
+			CharacterState = ECharacterState::Running;
+		}
+		break;
+	case ECharacterState::Running:
+		// From running we can idle, jump, fall or die
+		// jump has proity over run
+		if (PlayerVelocity.Z > 0.1) // must be jumping
+		{
+			CharacterState = ECharacterState::Jumping;
+		}
+		else if (PlayerVelocity.Z < -0.1) // must be falling
+		{
+			CharacterState = ECharacterState::Falling;
+		}
+		else if (FMath::Abs(PlayerVelocity.X) < 0.1) // must be idle
+		{
+			CharacterState = ECharacterState::Idle;
+		}
+		break;
+	case ECharacterState::Jumping:
+		// ether from jump to idle or fall
+		if (PlayerVelocity.Z < -0.1) // must be falling
+		{
+			CharacterState = ECharacterState::Falling;
+		}
+		else if (PlayerVelocity.Z < 0.1) // must be idle
+		{
+			CharacterState = ECharacterState::Idle;
+		}
+		break;
+	case ECharacterState::Falling:
+		if (PlayerVelocity.Z > -0.1 && PlayerVelocity.Z < 0.1) // must have landed
+		{
+			CharacterState = ECharacterState::Idle;
+		}
+		break;
+	case ECharacterState::Dead:
+		// RIP
+		break;
+	}
+}
+void AGD_2D_prj1Character::HandleState()
+{
+	switch (CharacterState)
+	{
+	case ECharacterState::Idle:
+		// Play idle animation
+		UpdateAnimation(IdleAnimation);
+		break;
+	case ECharacterState::Running:
+		// Play running animation
+		UpdateAnimation(RunningAnimation);
+		UpdateCharacter();
+		break;
+	case ECharacterState::Jumping:
+		// Play jumping animation 
+		//UpdateAnimation(JumpingAnimation);
+		UpdateCharacter();
+		break;
+	case ECharacterState::Falling:
+		// Play falling animation
+		//UpdateAnimation(FallingAnimation);
+		UpdateCharacter();
+		break;
+	case ECharacterState::Dead:
+		// Play dead animation
+		break;
+	}
+}
+
+

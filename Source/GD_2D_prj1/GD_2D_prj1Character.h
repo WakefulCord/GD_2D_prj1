@@ -21,6 +21,18 @@ class UInputMappingContext;
  * The CharacterMovementComponent (inherited from ACharacter) handles movement of the collision capsule
  * The Sprite component (inherited from APaperCharacter) handles the visuals
  */
+ //////////////////////////////////////////////////////////////////////////
+ // enums for character
+UENUM(BlueprintType)
+enum class ECharacterState : uint8
+{
+	Idle       UMETA(DisplayName = "Idle"),
+	Running    UMETA(DisplayName = "Running"),
+	Jumping    UMETA(DisplayName = "Jumping"),
+	Falling    UMETA(DisplayName = "Falling"),
+	Dead       UMETA(DisplayName = "Dead")
+};
+
 UCLASS(config=Game)
 class AGD_2D_prj1Character : public APaperCharacter
 {
@@ -36,6 +48,8 @@ class AGD_2D_prj1Character : public APaperCharacter
 
 	UTextRenderComponent* TextComponent;
 	virtual void Tick(float DeltaSeconds) override;
+
+
 protected:
 	// The animation to play while running around
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
@@ -46,7 +60,7 @@ protected:
 	class UPaperFlipbook* IdleAnimation;
 
 	/** Called to choose the correct animation to play based on the character's movement state */
-	void UpdateAnimation();
+	void UpdateAnimation(UPaperFlipbook* animation);
 
 	/** Called for side to side input */
 	void MoveRight(const FInputActionValue& Value);
@@ -69,6 +83,10 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 	// End of APawn interface
 
+	void UpdateState();
+
+	void HandleState();
+
 public:
 	AGD_2D_prj1Character();
 
@@ -83,5 +101,9 @@ public:
 	UInputAction* IA_Move;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
 	UInputAction* IA_Jump;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State")
+	ECharacterState CharacterState;
+
 
 };
